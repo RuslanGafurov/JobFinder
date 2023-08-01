@@ -1,0 +1,12 @@
+[flake8]
+
+exclude =
+    migrations,
+    manage.py
+
+ignore =
+    F405,
+    F403,
+    W605,
+
+max-line-length = 120

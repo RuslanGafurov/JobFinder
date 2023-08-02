@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+    <!-- form -->
+    <div class="row ">
+        <div class="col-md-6 mx-auto my-3">
+            <h4 class="my-4">Поиск вакансий</h4>
+        <form method="GET" action="{% url 'scraping:list' %}">
+            <div class="form-group">
+            {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,4 +1,5 @@
-cyrillic_letters = {
+def from_cyrillic_to_latin(text: str) -> str:
+    cyrillic_letters = {
         u'а': u'a',
         u'б': u'b',
         u'в': u'v',
@@ -33,11 +34,18 @@ cyrillic_letters = {
         u'ю': u'yu',
         u'я': u'ya'
     }
-
-
-def from_cyrillic_to_latin(text: str) -> str:
     text = text.replace(' ', '_').lower()
     result = ''
     for char in text:
         result += cyrillic_letters.get(char, char)
     return result
+
+
+def get_filter(city, language) -> dict:
+    _filter = {}
+    if city or language:
+        if city:
+            _filter['city__slug'] = city
+        if language:
+            _filter['language__slug'] = language
+    return _filter

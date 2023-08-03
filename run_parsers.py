@@ -11,7 +11,7 @@ import django
 
 django.setup()
 
-from scraping.models import City, Language, Vacancy
+from scraping.models import City, Language, Vacancy, Error
 from scraping.parsers import *
 
 parsers = (
@@ -35,6 +35,9 @@ for job in jobs:
     except DatabaseError:
         pass
 
+if errors:
+    temp_errors = Error(data=errors)
+    temp_errors.save()
 
 # # ____________________________________ Test ____________________________________
 # import codecs

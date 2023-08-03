@@ -1,4 +1,4 @@
-from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 
@@ -38,7 +38,7 @@ class MyUser(AbstractBaseUser):
 
     def __str__(self):
         return self.email
-        
+
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,

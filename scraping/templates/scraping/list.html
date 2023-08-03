@@ -10,7 +10,7 @@
         {% for obj in object_list %}
             <div class="card my-3">
                 <div class="card-header">
-                    <h5>{{ obj.title }}</h5>
+                    <h5><a href="{{ obj.url }}">{{ obj.title }}</a></h5>
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ obj.company }}</h5>
@@ -23,6 +23,12 @@
                 </div>
             </div>
         {% endfor %}
+    </div>
+
+    <!-- Form -->
+    <div>
+        {% url 'scraping:list' as action%}
+        {% include 'form.html' with action=action text='Новый поиск' button='Найти' %}
     </div>
 
 {% endblock content %}

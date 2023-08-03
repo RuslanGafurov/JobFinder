@@ -3,6 +3,12 @@ from django.db import models
 from scraping.services import from_cyrillic_to_latin
 
 
+def default_urls():
+    return {
+        'headhunter': '',
+    }
+
+
 class City(models.Model):
 
     name = models.CharField(
@@ -108,3 +114,25 @@ class Error(models.Model):
 
     def __str__(self):
         return self.timestamp
+
+
+class Url(models.Model):
+
+    city = models.ForeignKey(
+        'scraping.City',
+        verbose_name='город',
+        on_delete=models.CASCADE,
+    )
+    language = models.ForeignKey(
+        'scraping.Language',
+        verbose_name='язык',
+        on_delete=models.CASCADE,
+    )
+    urls_data = models.JSONField(
+        default=default_urls,
+    )
+
+    class Meta:
+        unique_together = ('city', 'language')
+        verbose_name = 'адрес'
+        verbose_name_plural = 'адреса'

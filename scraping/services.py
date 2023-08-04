@@ -41,7 +41,7 @@ def from_cyrillic_to_latin(text: str) -> str:
     return result
 
 
-def get_filter(city, language) -> dict:
+def get_filter(city: str, language: str) -> dict[str, str]:
     _filter = {}
     if city or language:
         if city:

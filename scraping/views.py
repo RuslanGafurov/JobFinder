@@ -18,6 +18,7 @@ def home_view(request):
 
 class VacancyListView(ListView):
     model = Vacancy
+    paginate_by = 10
     template_name = 'scraping/list.html'
 
     def get_context_data(self, **kwargs):

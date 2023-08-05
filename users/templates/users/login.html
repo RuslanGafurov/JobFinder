@@ -4,14 +4,22 @@
 {% block content %}
 
     <div class="row">
-        <div class="col-md-8 mx-auto">
-            <h4 class="my=2">Форма входа</h4>
+        <div class="col-md-8 my-3 mx-auto">
+
+            <h4 class="my=2">Вход в аккаунт</h4>
             <form method="POST" action="">{% csrf_token %}
                 <div class="form-group">
                     {{ form.as_p }}
                 </div>
                 <button type="submit" class="btn btn-primary">Войти</button>
-            </form>
+            </form><br>
+
+            <h5>Нет аккаунта? Зарегистрируйтесь</h5>
+
+            <a href="{% url 'users:registration' %}">
+                <button type="button" class="btn btn-primary my-2">Перейти</button>
+            </a>
+
         </div>
     </div>
 

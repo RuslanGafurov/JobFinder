@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import check_password
 
-from scraping.models import City
+from scraping.models import City, Language
 
 User = get_user_model()
 
@@ -80,20 +80,20 @@ class UserUpdateForm(forms.Form):
 
     city = forms.ModelChoiceField(
         label='Город',
+        queryset=City.objects.all(),
         to_field_name='slug',
         required=True,
-        queryset=City.objects.all(),
         widget=forms.Select(attrs={
-            'class': 'class-control',
+            'class': 'form-control',
         })
     )
     language = forms.ModelChoiceField(
         label='Язык',
+        queryset=Language.objects.all(),
         to_field_name='slug',
         required=True,
-        queryset=City.objects.all(),
         widget=forms.Select(attrs={
-            'class': 'class-control',
+            'class': 'form-control',
         })
     )
     send_email = forms.BooleanField(

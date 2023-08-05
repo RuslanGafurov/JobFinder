@@ -1,3 +1,9 @@
+import os
+import sys
+
+import django
+
+
 def from_cyrillic_to_latin(text: str) -> str:
     cyrillic_letters = {
         u'а': u'a',
@@ -71,3 +77,11 @@ headers = [
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
     }
 ]
+
+
+def launch_django() -> None:
+    """ Функция предназначенная для запуска Django вне приложений """
+    project_path = os.path.dirname(os.path.abspath('manage.py'))
+    sys.path.append(project_path)
+    os.environ["DJANGO_SETTINGS_MODULE"] = 'job_finder.settings'
+    django.setup()

@@ -1,7 +1,9 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import redirect, render
 
 from users.forms import UserLoginForm, UserRegistrationForm, UserUpdateForm
+
+User = get_user_model()
 
 
 def login_view(request):
@@ -52,3 +54,12 @@ def update_view(request):
         return render(request, 'users/profile.html', {'form': form})
     else:
         return redirect('users:login')
+
+
+def delete_view(request):
+    if request.user.is_authenticated:
+        user = request.user
+        if request.method == 'POST':
+            user_qs = User.objects.get(pk=user.pk)
+            user_qs.delete()
+    return redirect('home')

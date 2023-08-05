@@ -5,20 +5,18 @@
 
     <!-- Display of vacancies -->
     <div class="">
-        <h1>Вакансии</h1>
+        <h1 class="text-center">Вакансии</h1>
         {% for obj in object_list %}
             <div class="card my-3">
-                <div class="card-header">
-                    <h5>{{ obj.title }}</h5>
-                </div>
+                <h5 class="card-header">{{ obj.title }}</h5>
                 <div class="card-body">
-                    <h5 class="card-title">{{ obj.company }}</h5>
+                    <h5 class="card-title">Компания: "{{ obj.company }}"</h5>
                     <p class="card-text">{{ obj.description }}</p>
                     <small>
                         <p>{{ obj.city.name }} | {{ obj.language.name }}</p>
                         <p>{{ obj.timestamp|date:"l d M Y" }}</p>
                     </small>
-                    <a href="#" class="btn btn-primary">Подробнее</a>
+                    <a href="{{ obj.url }}" class="btn btn-primary">Подробнее</a>
                 </div>
             </div>
         {% endfor %}

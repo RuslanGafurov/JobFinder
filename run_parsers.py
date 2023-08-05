@@ -11,11 +11,10 @@ django.setup()                                                # |
 # ______________________________________________________________|
 
 import asyncio
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
-
-from typing import Any
 
 from scraping.models import Error, Url, Vacancy
 from scraping.parsers import *

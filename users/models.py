@@ -60,7 +60,7 @@ class MyUser(AbstractBaseUser):
     REQUIRED_FIELDS = []
 
     class Meta:
-        verbose_name = 'пользователя'
+        verbose_name = 'пользователь'
         verbose_name_plural = 'пользователи'
 
     def __str__(self):

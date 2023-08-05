@@ -1,14 +1,8 @@
-# ________________________ Запуск Django ________________________
-import os                                                     # |
-import sys                                                    # |
-                                                              # |
-project_path = os.path.dirname(os.path.abspath('manage.py'))  # |
-sys.path.append(project_path)                                 # |
-os.environ["DJANGO_SETTINGS_MODULE"] = 'job_finder.settings'  # |
-                                                              # |
-import django                                                 # |
-django.setup()                                                # |
-# ______________________________________________________________|
+# _______________ Запуск Django ________________
+from scraping.services import launch_django  # |
+                                             # |
+launch_django()                              # |
+# _____________________________________________|
 
 import asyncio
 from typing import Any

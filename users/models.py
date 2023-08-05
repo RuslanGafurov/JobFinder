@@ -32,15 +32,9 @@ class MyUserManager(BaseUserManager):
 
 
 class MyUser(AbstractBaseUser):
-    class Meta:
-        verbose_name = 'пользователя'
-        verbose_name_plural = 'пользователи'
-
-    def __str__(self):
-        return self.email
 
     email = models.EmailField(
-        verbose_name="email address",
+        verbose_name="Адрес",
         max_length=255,
         unique=True,
     )
@@ -64,6 +58,13 @@ class MyUser(AbstractBaseUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    class Meta:
+        verbose_name = 'пользователя'
+        verbose_name_plural = 'пользователи'
+
+    def __str__(self):
+        return self.email
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"

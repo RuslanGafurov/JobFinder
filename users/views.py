@@ -42,13 +42,13 @@ def update_view(request):
                 user.language = data['language']
                 user.send_email = data['send_email']
                 user.save()
-                return redirect('users:update')
+                return redirect('users:profile')
         else:
             form = UserUpdateForm(initial={
                 'city': user.city,
                 'language': user.language,
                 'send_email': user.send_email,
             })
-        return render(request, 'users/update.html', {'form': form})
+        return render(request, 'users/profile.html', {'form': form})
     else:
         return redirect('users:login')

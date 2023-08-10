@@ -7,9 +7,6 @@ from bs4 import BeautifulSoup
 
 from scraping.services import headers
 
-__all__ = (
-    'headhunter',
-)
 return_annotation = tuple[list[dict[str, Any]], list[dict[str, str]]]
 
 

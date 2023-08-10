@@ -4,13 +4,13 @@ from scraping.services import launch_django  # |
 launch_django()                              # |
 # _____________________________________________|
 
-import datetime
+import datetime as dt
 
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 
 from job_finder.settings import env
-from scraping.models import Error, Vacancy, Url, City, Language
+from scraping.models import City, Error, Language, Url, Vacancy
 
 User = get_user_model()
 
@@ -102,7 +102,7 @@ def check_urls() -> tuple[str, str, str]:
     return url_subject, url_html, url_text_content
 
 
-today = datetime.date.today()
+today = dt.date.today()
 from_email = env('EMAIL_HOST_USER')
 admin_email = env('EMAIL_HOST_USER')
 subject, html, text_content = '', '', ''

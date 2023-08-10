@@ -4,51 +4,136 @@ from scraping.services import launch_django  # |
 launch_django()                              # |
 # _____________________________________________|
 
-from job_finder.settings import env
+import datetime
 
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 
-from scraping.models import Vacancy
+from job_finder.settings import env
+from scraping.models import Error, Vacancy, Url, City, Language
 
 User = get_user_model()
 
 
-users = User.objects.filter(send_email=True).values('email', 'city', 'language')
+def send_messages(_subject: str, _text_content: str, html_content: str, to: str) -> None:
+    """ Функция по отправке электронных писем """
 
-subject = 'Рассылка вакансий'
-text_content = 'Рассылка вакансий'
-from_email = env('EMAIL_HOST_USER')
-empty = '<h2>К сожалению, на сегодня вакансий нет./h2>'
-users_dct = {}
-for user in users:
-    users_dct.setdefault((user['city'], user['language']), [])
-    users_dct[(user['city'], user['language'])].append(user['email'])
+    msg = EmailMultiAlternatives(_subject, _text_content, from_email, [to])
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
 
-if users_dct:
-    params = {
-        'city_id__in': [],
-        'language_id__in': [],
-    }
+
+def get_vacancies() -> None:
+    """ Функция по формированию актуальных вакансий """
+
+    _subject = f'Рассылка вакансий за { today }'
+    _text_content = f'Рассылка вакансий за { today }'
+    empty = '<h2>К сожалению, на сегодня вакансий нет</h2>'
+
+    # Формирование IDs городов и специальностей
+    params = {'city_id__in': [], 'language_id__in': []}
     for pair in users_dct.keys():
         params['city_id__in'].append(pair[0])
         params['language_id__in'].append(pair[1])
-    vacancies_qs = Vacancy.objects.filter(**params).values()[:10]
-    vacancies = {}
+
+    vacancies_qs = Vacancy.objects.filter(**params, timestamp=today).values()  # Все вакансии за сегодня
+
+    # Отсортированные вакансии по IDs городов и специальностей
+    all_vacancies = {}
     for vacancy in vacancies_qs:
-        vacancies.setdefault((vacancy['city_id'], vacancy['language_id']), [])
-        vacancies[(vacancy['city_id'], vacancy['language_id'])].append(vacancy)
-    for keys, emails in users_dct.items():
-        rows = vacancies.get(keys, [])
-        html = ''
-        for row in rows:
-            html += f'<h5>{ row["title"] }</h5>'
-            html += f'<p>{ row["company"] }</p>'
-            html += f'<p>{ row["description"] }</p>'
-            html += f'<a href="{ row["url"] }">Просмотреть</a><br><hr>'
-        html_content = html if html else empty
+        all_vacancies.setdefault((vacancy['city_id'], vacancy['language_id']), [])
+        all_vacancies[(vacancy['city_id'], vacancy['language_id'])].append(vacancy)
+
+    for ids, emails in users_dct.items():
+        vacancies = all_vacancies.get(ids, [])  # Вакансии по определенным IDs городов и специальностей
+
+        # Формирование html страницы для отображения вакансий
+        _html = ''
+        for vacancy in vacancies:
+            _html += f'<h5>{ vacancy["title"] }</h5>'
+            _html += f'<p>{ vacancy["company"] }</p>'
+            _html += f'<p>{ vacancy["description"] }</p>'
+            _html += f'<a href="{ vacancy["url"] }">Просмотреть</a><br><hr>'
+        html_content = _html if _html else empty
+
+        # Отправка списка вакансий каждому пользователю
         for email in emails:
-            to = email
-            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-            msg.attach_alternative(html_content, 'text/html')
-            msg.send()
+            send_messages(subject, _text_content, html_content, email)
+
+
+def get_errors(html_content: str) -> None:
+    """ Функция по формированию ошибок сбора вакансий """
+
+    errors_subject = f'Ошибки сбора вакансий за { today }'
+    _text_content = f'Ошибки сбора вакансий за { today }'
+
+    errors = errors_qs  # Получаем ошибки
+
+    for err in errors.values():
+        # Формирование html страницы с ошибкой
+        for row in err:
+            html_content += f'<h5>Ошибка: {row["title"]}</h5>'
+            html_content += f'<a href="{row["url"]}">Просмотреть</a><br><hr>'
+
+            # Отправка ошибки админу
+            send_messages(errors_subject, _text_content, html_content, admin_email)
+
+
+def check_urls() -> tuple[str, str, str]:
+    """ Функция проверки наличия urls по наборам: город, специальность """
+
+    cities = City.objects.all().values('id', 'name')
+    languages = Language.objects.all().values('id', 'name')
+    url_html, url_subject, url_text_content, names = ('' for _ in range(4))
+
+    # Смена IDs городов и специальностей на названия
+    for ids in users_dct.keys():
+        city = cities.get(pk=ids[0])['name']
+        language = languages.get(pk=ids[1])['name']
+        if ids not in urls_ids_dct:
+            names += f' { city } - { language },'
+
+    # Формирование отображения html страницы
+    if names:
+        url_html = f'Отсутствуют URLs для:{ names[:-1] }'
+        url_subject = f'Отсутствующие urls за { today }'
+        url_text_content = url_subject
+
+    return url_subject, url_html, url_text_content
+
+
+today = datetime.date.today()
+from_email = env('EMAIL_HOST_USER')
+admin_email = env('EMAIL_HOST_USER')
+subject, html, text_content = '', '', ''
+
+users_qs = User.objects.filter(send_email=True).values('email', 'city', 'language')
+urls_ids_qs = Url.objects.all().values('city', 'language')
+errors_qs = Error.objects.filter(timestamp=today).values('data')
+
+
+# Формирование словаря со списком адресов по городу и специализации
+users_dct = {}
+for user in users_qs:
+    users_dct.setdefault((user['city'], user['language']), [])
+    users_dct[(user['city'], user['language'])].append(user['email'])
+
+
+# Формирование словаря с urls
+urls_ids_dct = {(url['city'], url['language']): True for url in urls_ids_qs}
+
+# Если есть IDs urls
+if urls_ids_dct:
+    subject, html, text_content = check_urls()
+
+# Если есть пользователи, которым нужна рассылка
+if users_dct:
+    get_vacancies()
+
+# Если имеются какие-либо ошибки
+if errors_qs.exists():
+    get_errors(html)
+# Если нет ошибок, но отсутствуют urls
+else:
+    if subject:
+        send_messages(subject, text_content, html, admin_email)

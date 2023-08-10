@@ -5,13 +5,14 @@ launch_django()                              # |
 # _____________________________________________|
 
 import asyncio
+import datetime as dt
 from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
 
 from scraping.models import Error, Url, Vacancy
-from scraping.parsers import *
+from scraping.parsers import headhunter
 
 User = get_user_model()
 
@@ -23,13 +24,15 @@ jobs, errors = [], []
 
 def get_settings() -> set[tuple[int, int]]:
     """ Функция получения IDs города и языка """
+
     users_qs = User.objects.filter(send_email=True).values()
     ids = set((u['city_id'], u['language_id']) for u in users_qs)
     return ids
 
 
 def get_urls(_settings: set[tuple[int, int]]) -> list[dict[str, Any]]:
-    """ Функция получения адресов для поиска вакансий """
+    """ Функция получения адресов пользователей для поиска вакансий """
+
     urls_qs = Url.objects.all().values()
     url_dct = {(u['city_id'], u['language_id']): u['urls_data'] for u in urls_qs}
     urls = []
@@ -73,6 +76,13 @@ for job in jobs:
     except DatabaseError:
         pass
 
+# Проверка наличия ошибок в целом и ошибок за сегодняшний день
 if errors:
-    temp_errors = Error(data=errors)
-    temp_errors.save()
+    errors_today = Error.objects.filter(timestamp=dt.date.today())
+    if errors_today.exists():
+        tmp_errors = errors_today.first()
+        tmp_errors.data.update({'Ошибки': errors})
+        tmp_errors.save()
+    else:
+        tmp_errors = Error(data=f'Ошибки: {errors}')
+        tmp_errors.save()

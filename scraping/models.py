@@ -28,7 +28,7 @@ class City(models.Model):
         verbose_name_plural = 'города'
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -55,7 +55,7 @@ class Language(models.Model):
         verbose_name_plural = 'языки'
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -94,7 +94,7 @@ class Vacancy(models.Model):
     )
 
     class Meta:
-        verbose_name = 'вакансию'
+        verbose_name = 'вакансия'
         verbose_name_plural = 'вакансии'
         ordering = ['-timestamp']
 
@@ -104,17 +104,17 @@ class Vacancy(models.Model):
 
 class Error(models.Model):
 
+    data = models.JSONField()
     timestamp = models.DateField(
         auto_now_add=True,
     )
-    data = models.JSONField()
 
     class Meta:
-        verbose_name = 'ошибку'
+        verbose_name = 'ошибка'
         verbose_name_plural = 'ошибки'
 
     def __str__(self):
-        return self.timestamp
+        return str(self.timestamp)
 
 
 class Url(models.Model):
@@ -137,3 +137,6 @@ class Url(models.Model):
         unique_together = ('city', 'language')
         verbose_name = 'адрес'
         verbose_name_plural = 'адреса'
+
+    def __str__(self):
+        return f'{str(self.city)} - {str(self.language)}'

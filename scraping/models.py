@@ -153,7 +153,6 @@ class Suggestion(models.Model):
     email = models.EmailField(
         verbose_name="Адрес",
         max_length=255,
-        unique=True,
     )
     city = models.CharField(
         max_length=150,

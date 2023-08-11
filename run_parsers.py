@@ -80,9 +80,9 @@ for job in jobs:
 if errors:
     errors_today = Error.objects.filter(timestamp=dt.date.today())
     if errors_today.exists():
-        tmp_errors = errors_today.first()
-        tmp_errors.data.update({'Ошибки': errors})
-        tmp_errors.save()
+        err = errors_today.first()
+        err.data.update({'errors': errors})
+        err.save()
     else:
-        tmp_errors = Error(data=f'Ошибки: {errors}')
-        tmp_errors.save()
+        data = f'errors: {errors}'
+        Error(data=data).save()

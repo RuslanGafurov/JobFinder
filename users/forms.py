@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 class UserLoginForm(forms.Form):
+    """Форма входа"""
 
     email = forms.EmailField(
         label='Адрес',
@@ -42,6 +43,7 @@ class UserLoginForm(forms.Form):
 
 
 class UserRegistrationForm(forms.ModelForm):
+    """Форма регистрации пользователя"""
 
     email = forms.EmailField(
         label='Адрес',
@@ -77,6 +79,7 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class UserUpdateForm(forms.Form):
+    """Форма редактирования данных"""
 
     city = forms.ModelChoiceField(
         label='Город',
@@ -108,6 +111,7 @@ class UserUpdateForm(forms.Form):
 
 
 class UserContactForm(forms.Form):
+    """Форма предложений от пользователя"""
 
     city = forms.CharField(
         label='Город',

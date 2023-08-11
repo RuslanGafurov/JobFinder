@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from scraping.models import City, Error, Language, Url, Vacancy, Suggestion
+from scraping.models import City, Error, Language, Suggestion, Url, Vacancy
 
 admin.site.register(City)
 admin.site.register(Language)

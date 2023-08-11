@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 
 from scraping.models import Suggestion
-from users.forms import UserLoginForm, UserRegistrationForm, UserUpdateForm, UserContactForm
+from users.forms import (UserContactForm, UserLoginForm, UserRegistrationForm,
+                         UserUpdateForm)
 
 User = get_user_model()
 

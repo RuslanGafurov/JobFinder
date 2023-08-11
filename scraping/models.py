@@ -10,7 +10,7 @@ def default_urls():
 
 
 class City(models.Model):
-    """Города"""
+    """Модель городов"""
 
     name = models.CharField(
         max_length=50,
@@ -38,7 +38,7 @@ class City(models.Model):
 
 
 class Language(models.Model):
-    """Языки программирования"""
+    """Модель языков программирования"""
 
     name = models.CharField(
         max_length=50,
@@ -66,7 +66,7 @@ class Language(models.Model):
 
 
 class Vacancy(models.Model):
-    """Вакансии"""
+    """Модель вакансий"""
 
     url = models.URLField(
         unique=True,
@@ -106,7 +106,7 @@ class Vacancy(models.Model):
 
 
 class Error(models.Model):
-    """Ошибки при сборе вакансий"""
+    """Модель ошибок при сборе вакансий"""
 
     data = models.JSONField()
     timestamp = models.DateField(
@@ -122,7 +122,7 @@ class Error(models.Model):
 
 
 class Url(models.Model):
-    """Адреса для сбора вакансий"""
+    """Модель адресов для сбора вакансий"""
 
     city = models.ForeignKey(
         'scraping.City',
@@ -148,7 +148,7 @@ class Url(models.Model):
 
 
 class Suggestion(models.Model):
-    """Предложения пользователей"""
+    """Модель предложений от пользователей"""
 
     email = models.EmailField(
         verbose_name="Адрес",

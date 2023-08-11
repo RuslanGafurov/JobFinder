@@ -5,18 +5,15 @@ from scraping.forms import VacancyFindForm
 from scraping.models import Vacancy
 from scraping.services import get_filter
 
-__all__ = (
-    'home_view',
-    'VacancyListView',
-)
-
 
 def home_view(request):
-    context = {'form': VacancyFindForm()}
-    return render(request, 'home.html', context)
+    """Отображение домашней страницы с формой поиска"""
+    form = VacancyFindForm()
+    return render(request, 'home.html', {'form': form})
 
 
 class VacancyListView(ListView):
+    """Отображение вакансий"""
     model = Vacancy
     paginate_by = 10
     template_name = 'scraping/list.html'

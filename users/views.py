@@ -1,8 +1,11 @@
+import datetime as dt
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 
-from users.forms import UserLoginForm, UserRegistrationForm, UserUpdateForm
+from scraping.models import Error
+from users.forms import UserLoginForm, UserRegistrationForm, UserUpdateForm, UserContactForm
 
 User = get_user_model()
 
@@ -38,6 +41,7 @@ def registration_view(request):
 
 
 def update_view(request):
+    contact_form = UserContactForm()
     if request.user.is_authenticated:
         user = request.user
         if request.method == 'POST':
@@ -56,7 +60,8 @@ def update_view(request):
                 'language': user.language,
                 'send_email': user.send_email,
             })
-        return render(request, 'users/profile.html', {'form': form})
+        forms = {'form': form, 'contact_form': contact_form}
+        return render(request, 'users/profile.html', forms)
     else:
         return redirect('users:login')
 
@@ -69,3 +74,38 @@ def delete_view(request):
             user_qs.delete()
             messages.success(request, 'Аккаунт удален')
     return redirect('home')
+
+
+def contact_view(request):
+    if request.method == 'POST':
+        contact_form = UserContactForm(request.POST or None)
+        if contact_form.is_valid():
+            cln_data = contact_form.cleaned_data
+            city = cln_data.get('city')
+            language = cln_data.get('language')
+            email = cln_data.get('email')
+            errors_today = Error.objects.filter(timestamp=dt.date.today())
+            if errors_today.exists():
+                err = errors_today.first()
+                data = err.data.get('user_data', [])
+                data.append({
+                    'city': city,
+                    'language': language,
+                    'email': email,
+                })
+                err.data['user_data'] = data
+                err.save()
+            else:  # Нет ошибок за сегодняшний день
+                user_data = [{
+                    'city': city,
+                    'language': language,
+                    'email': email,
+                }]
+                Error(data=f'Предложения пользователей: {user_data}').save()
+
+            messages.success(request, 'Данные отправлены')
+            return redirect('users:profile')
+        else:  # Форма не валидна
+            return redirect('users:profile')
+    else:  # Метод GET
+        return redirect('users:login')

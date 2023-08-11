@@ -62,7 +62,7 @@ def get_vacancies() -> None:
 
 
 def get_errors(html_content: str) -> None:
-    """Формирование ошибок сбора вакансий"""
+    """Формирование ошибок при сборе вакансий"""
 
     errors_subject = f'Ошибки сбора вакансий за { today }'
     _text_content = f'Ошибки сбора вакансий за { today }'

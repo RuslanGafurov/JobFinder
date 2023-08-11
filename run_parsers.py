@@ -20,6 +20,7 @@ parsers = (
     (headhunter, 'headhunter'),
 )
 jobs, errors = [], []
+today = dt.date.today()
 
 
 def get_settings() -> set[tuple[int, int]]:
@@ -69,6 +70,7 @@ loop.run_until_complete(tasks)                                                  
 loop.close()                                                                    # |
 # ________________________________________________________________________________|
 
+# Сохранение полученных вакансий
 for job in jobs:
     vacancy = Vacancy(**job)
     try:
@@ -76,9 +78,10 @@ for job in jobs:
     except DatabaseError:
         pass
 
-# Проверка наличия ошибок в целом и ошибок за сегодняшний день
+# Проверка наличия ошибок и их сохранение
 if errors:
-    errors_today = Error.objects.filter(timestamp=dt.date.today())
+    errors_today = Error.objects.filter(timestamp=today)
+    # За текущий день
     if errors_today.exists():
         err = errors_today.first()
         err.data.update({'errors': errors})
@@ -86,3 +89,7 @@ if errors:
     else:
         data = f'errors: {errors}'
         Error(data=data).save()
+
+# Удаление неактуальных вакансий
+ten_days_ago = today - dt.timedelta(days=10)
+Vacancy.objects.filter(timestamp__lte=ten_days_ago).delete()

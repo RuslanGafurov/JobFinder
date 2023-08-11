@@ -10,6 +10,7 @@ def default_urls():
 
 
 class City(models.Model):
+    """Города"""
 
     name = models.CharField(
         max_length=50,
@@ -37,6 +38,7 @@ class City(models.Model):
 
 
 class Language(models.Model):
+    """Языки программирования"""
 
     name = models.CharField(
         max_length=50,
@@ -64,6 +66,7 @@ class Language(models.Model):
 
 
 class Vacancy(models.Model):
+    """Вакансии"""
 
     url = models.URLField(
         unique=True,
@@ -103,6 +106,7 @@ class Vacancy(models.Model):
 
 
 class Error(models.Model):
+    """Ошибки при сборе вакансий"""
 
     data = models.JSONField()
     timestamp = models.DateField(
@@ -118,6 +122,7 @@ class Error(models.Model):
 
 
 class Url(models.Model):
+    """Адреса для сбора вакансий"""
 
     city = models.ForeignKey(
         'scraping.City',
@@ -140,3 +145,31 @@ class Url(models.Model):
 
     def __str__(self):
         return f'{str(self.city)} - {str(self.language)}'
+
+
+class Suggestion(models.Model):
+    """Предложения пользователей"""
+
+    email = models.EmailField(
+        verbose_name="Адрес",
+        max_length=255,
+        unique=True,
+    )
+    city = models.CharField(
+        max_length=150,
+        verbose_name='город',
+    )
+    language = models.CharField(
+        max_length=150,
+        verbose_name='язык',
+    )
+    timestamp = models.DateField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        verbose_name = 'предложение'
+        verbose_name_plural = 'предложения'
+
+    def __str__(self):
+        return f'От "{ str(self.email) }": { str(self.timestamp) }'

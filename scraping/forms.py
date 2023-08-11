@@ -4,6 +4,8 @@ from scraping.models import City, Language
 
 
 class VacancyFindForm(forms.Form):
+    """Форма поиска вакансий"""
+
     city = forms.ModelChoiceField(
         queryset=City.objects.all(),
         to_field_name='slug',

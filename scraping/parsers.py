@@ -11,6 +11,7 @@ return_annotation = tuple[list[dict[str, Any]], list[dict[str, str]]]
 
 
 def headhunter(url: str, city: Optional[int] = None, language: Optional[int] = None) -> return_annotation:
+    """Сбор вакансий с сайта headhunter"""
     jobs, errors = [], []
     if url:
         response = requests.get(url, headers=headers[randint(0, 2)])

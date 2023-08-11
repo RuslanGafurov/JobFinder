@@ -57,6 +57,7 @@ def get_filter(city: str, language: str) -> dict[str, str]:
     return _filter
 
 
+# Для сбора вакансий
 headers = [
     {
         'User-Agent':
@@ -80,7 +81,7 @@ headers = [
 
 
 def launch_django() -> None:
-    """ Функция предназначенная для запуска Django вне приложений """
+    """Запуск Django вне приложений"""
     project_path = os.path.dirname(os.path.abspath('manage.py'))
     sys.path.append(project_path)
     os.environ["DJANGO_SETTINGS_MODULE"] = 'job_finder.settings'

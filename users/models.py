@@ -3,6 +3,8 @@ from django.db import models
 
 
 class MyUserManager(BaseUserManager):
+    """Переопределение стандартного менеджера"""
+
     def create_user(self, email, password=None):
         """
         Creates and saves a User with the given email and password.
@@ -32,6 +34,7 @@ class MyUserManager(BaseUserManager):
 
 
 class MyUser(AbstractBaseUser):
+    """Переопределение стандартной модели"""
 
     email = models.EmailField(
         verbose_name="Адрес",

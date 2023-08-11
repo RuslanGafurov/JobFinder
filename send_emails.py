@@ -16,7 +16,7 @@ User = get_user_model()
 
 
 def send_messages(_subject: str, _text_content: str, html_content: str, to: str) -> None:
-    """ Функция по отправке электронных писем """
+    """Отправка электронных писем"""
 
     msg = EmailMultiAlternatives(_subject, _text_content, from_email, [to])
     msg.attach_alternative(html_content, 'text/html')
@@ -24,7 +24,7 @@ def send_messages(_subject: str, _text_content: str, html_content: str, to: str)
 
 
 def get_vacancies() -> None:
-    """ Функция по формированию актуальных вакансий """
+    """Формирование актуальных вакансий"""
 
     _subject = f'Рассылка вакансий за { today }'
     _text_content = f'Рассылка вакансий за { today }'
@@ -62,14 +62,12 @@ def get_vacancies() -> None:
 
 
 def get_errors(html_content: str) -> None:
-    """ Функция по формированию ошибок сбора вакансий """
+    """Формирование ошибок сбора вакансий"""
 
     errors_subject = f'Ошибки сбора вакансий за { today }'
     _text_content = f'Ошибки сбора вакансий за { today }'
 
-    errors = errors_qs  # Получаем ошибки
-
-    for err in errors.values():
+    for err in errors_qs.values():
         # Формирование html страницы с ошибкой
         for row in err:
             html_content += f'<h5>Ошибка: {row["title"]}</h5>'
@@ -80,7 +78,7 @@ def get_errors(html_content: str) -> None:
 
 
 def check_urls() -> tuple[str, str, str]:
-    """ Функция проверки наличия urls по наборам: город, специальность """
+    """Проверка наличия urls по наборам: город, специальность"""
 
     cities = City.objects.all().values('id', 'name')
     languages = Language.objects.all().values('id', 'name')

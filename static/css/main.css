@@ -1,0 +1,8 @@
+@font-face {
+    font-family: Aldrich;
+    src: url(../fonts/Aldrich-Regular.ttf);
+}
+#brand {
+    font-family: Aldrich;
+    color: #DDD;
+}

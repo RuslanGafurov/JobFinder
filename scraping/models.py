@@ -68,19 +68,17 @@ class Language(models.Model):
 class Vacancy(models.Model):
     """Модель вакансий"""
 
-    url = models.URLField(
-        unique=True,
+    site = models.CharField(
+        verbose_name='сайт',
+        max_length=50,
     )
     title = models.CharField(
         max_length=250,
-        verbose_name='заголовок',
+        verbose_name='должность',
     )
     company = models.CharField(
         max_length=250,
         verbose_name='компания',
-    )
-    description = models.TextField(
-        verbose_name='описание',
     )
     city = models.ForeignKey(
         'scraping.City',
@@ -92,9 +90,9 @@ class Vacancy(models.Model):
         verbose_name='язык',
         on_delete=models.CASCADE,
     )
-    timestamp = models.DateField(
-        auto_now_add=True,
-    )
+    url = models.URLField(unique=True)
+    description = models.TextField(verbose_name='описание')
+    timestamp = models.DateField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'вакансия'
@@ -102,23 +100,40 @@ class Vacancy(models.Model):
         ordering = ['-timestamp']
 
     def __str__(self):
-        return self.title
+        return str(self.site)
 
 
 class Error(models.Model):
     """Модель ошибок при сборе вакансий"""
 
-    data = models.JSONField()
+    site = models.CharField(
+        verbose_name='сайт',
+        max_length=50,
+    )
+    city = models.CharField(
+        verbose_name='город',
+        max_length=50,
+    )
+    language = models.CharField(
+        verbose_name='язык',
+        max_length=50,
+    )
+    error = models.CharField(
+        verbose_name='ошибка',
+        max_length=250,
+    )
     timestamp = models.DateField(
         auto_now_add=True,
+        verbose_name='дата',
     )
+    url = models.URLField()
 
     class Meta:
         verbose_name = 'ошибка'
         verbose_name_plural = 'ошибки'
 
     def __str__(self):
-        return str(self.timestamp)
+        return str(self.site)
 
 
 class Url(models.Model):
@@ -134,9 +149,7 @@ class Url(models.Model):
         verbose_name='язык',
         on_delete=models.CASCADE,
     )
-    urls_data = models.JSONField(
-        default=default_urls,
-    )
+    urls = models.JSONField(default=default_urls)
 
     class Meta:
         unique_together = ('city', 'language')
@@ -162,13 +175,11 @@ class Suggestion(models.Model):
         max_length=150,
         verbose_name='язык',
     )
-    timestamp = models.DateField(
-        auto_now_add=True,
-    )
+    timestamp = models.DateField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'предложение'
         verbose_name_plural = 'предложения'
 
     def __str__(self):
-        return f'От "{ str(self.email) }": { str(self.timestamp) }'
+        return f'Предложение от "{ str(self.email) }"'

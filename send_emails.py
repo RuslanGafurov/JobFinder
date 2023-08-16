@@ -6,13 +6,11 @@ launch_django()                              # |
 
 import datetime as dt
 
-from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 
+from users.models import User
 from job_finder.settings import env
 from scraping.models import City, Error, Language, Url, Vacancy
-
-User = get_user_model()
 
 
 def send_messages(_subject: str, _text_content: str, html_content: str, to: str) -> None:
@@ -70,8 +68,10 @@ def get_errors(html_content: str) -> None:
     for err in errors_qs.values():
         # Формирование html страницы с ошибкой
         for row in err:
-            html_content += f'<h5>Ошибка: {row["title"]}</h5>'
-            html_content += f'<a href="{row["url"]}">Просмотреть</a><br><hr>'
+            html_content += f'<h5>{ row["site"] }</h5>'
+            html_content += f'<h5>{ row["city"] } - { row["language"] }</h5>'
+            html_content += f'<h5>{ row["error"] }</h5>'
+            html_content += f'<a href="{ row["url"] }">Просмотреть</a><br><hr>'
 
             # Отправка ошибки админу
             send_messages(errors_subject, _text_content, html_content, admin_email)
@@ -107,7 +107,7 @@ subject, html, text_content = '', '', ''
 
 users_qs = User.objects.filter(send_email=True).values('email', 'city', 'language')
 urls_ids_qs = Url.objects.all().values('city', 'language')
-errors_qs = Error.objects.filter(timestamp=today).values('data')
+errors_qs = Error.objects.filter(timestamp=today)
 
 
 # Формирование словаря со списком адресов по городу и специализации

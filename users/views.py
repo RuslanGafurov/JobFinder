@@ -1,73 +1,49 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.shortcuts import redirect, render
+from django.contrib.auth.views import LoginView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
 
 from scraping.models import Suggestion
-from users.forms import (UserContactForm, UserLoginForm, UserRegistrationForm,
-                         UserUpdateForm)
+from users.forms import (UserContactForm, UserLoginForm, UserProfileForm,
+                         UserRegistrationForm)
+from users.models import User
 
-User = get_user_model()
+__all__ = (
+    'UserLoginView',
+    'UserRegistrationView',
+    'UserProfileView',
+    'delete_view',
+    'contact_view',
+)
 
 
-def login_view(request):
+class UserLoginView(SuccessMessageMixin, LoginView):
     """Вход в аккаунт"""
-    form = UserLoginForm(request.POST or None)
-    if form.is_valid():
-        cln_data = form.cleaned_data
-        user = authenticate(
-            request,
-            email=cln_data.get('email'),
-            password=cln_data.get('password')
-        )
-        login(request, user)
-        messages.success(request, 'Вход в аккаунт выполнен')
-        return redirect('home')
-    return render(request, 'users/login.html', {'form': form})
+    form_class = UserLoginForm
+    template_name = 'users/login.html'
+    success_message = 'Вход в аккаунт выполнен'
 
 
-def logout_view(request):
-    """Выход из аккаунта"""
-    logout(request)
-    messages.success(request, 'Выход из аккаунта выполнен')
-    return redirect('home')
+class UserRegistrationView(SuccessMessageMixin, CreateView):
+    """Регистрация нового пользователя"""
+    model = User
+    form_class = UserRegistrationForm
+    template_name = 'users/registration.html'
+    success_message = 'Аккаунт зарегистрирован. Теперь Вы можете войти'
+    success_url = reverse_lazy('users:login')
 
 
-def registration_view(request):
-    """Регистрация пользователя"""
-    form = UserRegistrationForm(request.POST or None)
-    if form.is_valid():
-        new_user = form.save(commit=False)
-        new_user.set_password(form.cleaned_data['password2'])
-        new_user.save()
-        messages.success(request, 'Аккаунт зарегистрирован')
-        return render(request, 'users/registration_done.html', {'new_user': new_user})
-    return render(request, 'users/registration.html', {'form': form})
+class UserProfileView(SuccessMessageMixin, UpdateView):
+    """Профиль пользователя"""
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/profile.html'
+    success_message = 'Данные изменены'
 
-
-def update_view(request):
-    """Обновление данных аккаунта"""
-    contact_form = UserContactForm()
-    if request.user.is_authenticated:
-        user = request.user
-        if request.method == 'POST':
-            form = UserUpdateForm(request.POST)
-            if form.is_valid():
-                cln_data = form.cleaned_data
-                user.city = cln_data['city']
-                user.language = cln_data['language']
-                user.send_email = cln_data['send_email']
-                user.save()
-                messages.success(request, 'Данные изменены')
-                return redirect('users:profile')
-        else:
-            form = UserUpdateForm(initial={
-                'city': user.city,
-                'language': user.language,
-                'send_email': user.send_email,
-            })
-        forms = {'form': form, 'contact_form': contact_form}
-        return render(request, 'users/profile.html', forms)
-    return redirect('users:login')
+    def get_success_url(self):
+        return reverse_lazy('users:profile', kwargs={'pk': self.object.pk})
 
 
 def delete_view(request):

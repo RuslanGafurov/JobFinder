@@ -54,10 +54,10 @@ class UserRegistrationForm(UserCreationForm):
         }),
     )
     password2 = forms.CharField(
-        label='Повторный пароль',
+        label='Пароль',
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Повторите пароль',
+            'placeholder': 'Подтвердите пароль',
         }),
     )
 
@@ -75,13 +75,13 @@ class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(
         label='Имя',
         widget=forms.TextInput(attrs={
-            'class': 'form-control'
+            'class': 'form-control',
         }),
     )
     last_name = forms.CharField(
         label='Фамилия',
         widget=forms.TextInput(attrs={
-            'class': 'form-control'
+            'class': 'form-control',
         }),
     )
     username = forms.CharField(
@@ -102,7 +102,7 @@ class UserProfileForm(UserChangeForm):
         to_field_name='slug',
         required=True,
         widget=forms.Select(attrs={
-            'class': 'form-control'
+            'class': 'form-control',
         })
     )
     language = forms.ModelChoiceField(
@@ -110,7 +110,7 @@ class UserProfileForm(UserChangeForm):
         to_field_name='slug',
         required=True,
         widget=forms.Select(attrs={
-            'class': 'form-control'
+            'class': 'form-control',
         })
     )
     send_email = forms.BooleanField(

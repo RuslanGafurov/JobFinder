@@ -10,7 +10,11 @@
             <div class="card my-3">
                 <h5 class="card-header">{{ obj.title }}</h5>
                 <div class="card-body">
-                    <h5 class="card-title">Компания: "{{ obj.company }}"</h5>
+                    <h5 class="card-title">
+                        {% if obj.company %}
+                            Компания: "{{ obj.company }}"
+                        {% endif %}
+                    </h5>
                     <p class="card-text">{{ obj.description }}</p>
                     <small>
                         <p>{{ obj.city.name }} | {{ obj.language.name }}</p>

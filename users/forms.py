@@ -1,20 +1,19 @@
 from django import forms
-from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
+                                       UserCreationForm)
 
 from scraping.models import City, Language
+from users.models import User
 
-User = get_user_model()
 
-
-class UserLoginForm(forms.Form):
+class UserLoginForm(AuthenticationForm):
     """Форма входа"""
 
-    email = forms.EmailField(
-        label='Адрес',
-        widget=forms.EmailInput(attrs={
+    username = forms.CharField(
+        label='Имя пользователя',
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Введите адрес электронной почты',
+            'placeholder': 'Введите имя пользователя',
         }),
     )
     password = forms.CharField(
@@ -25,26 +24,21 @@ class UserLoginForm(forms.Form):
         }),
     )
 
-    def clean(self, *args, **kwargs):
-        email = self.cleaned_data.get('email').strip()
-        password = self.cleaned_data.get('password').strip()
-
-        if email and password:
-            current_user = User.objects.filter(email=email)
-            if not current_user.exists():
-                raise forms.ValidationError('Такого пользователя нет')
-            if not check_password(password, current_user[0].password):
-                raise forms.ValidationError('Не правильно введён пароль')
-            user = authenticate(email=email, password=password)
-            if not user:
-                raise forms.ValidationError('Данный аккаунт отключен')
-
-        return super(UserLoginForm, self).clean(*args, **kwargs)
+    class Meta:
+        model = User
+        fields = ('username', 'password')
 
 
-class UserRegistrationForm(forms.ModelForm):
+class UserRegistrationForm(UserCreationForm):
     """Форма регистрации пользователя"""
 
+    username = forms.CharField(
+        label='Имя пользователя',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите имя пользователя',
+        }),
+    )
     email = forms.EmailField(
         label='Адрес',
         widget=forms.EmailInput(attrs={
@@ -69,34 +63,54 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('username', 'email', 'password1', 'password2')
 
-    def clean_password2(self):
-        data = self.cleaned_data
-        if data['password1'] != data['password2']:
-            raise forms.ValidationError('Пароли не совпадают')
-        return data['password2']
+    def save(self, commit=True):
+        return super(UserRegistrationForm, self).save(commit=commit)
 
 
-class UserUpdateForm(forms.Form):
-    """Форма редактирования данных"""
+class UserProfileForm(UserChangeForm):
+    """Форма профиля пользователя"""
 
+    first_name = forms.CharField(
+        label='Имя',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        }),
+    )
+    last_name = forms.CharField(
+        label='Фамилия',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        }),
+    )
+    username = forms.CharField(
+        label='Имя пользователя',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
+    )
+    email = forms.EmailField(
+        label='Адрес',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите адрес электронной почты',
+        }),
+    )
     city = forms.ModelChoiceField(
-        label='Город',
         queryset=City.objects.all(),
         to_field_name='slug',
         required=True,
         widget=forms.Select(attrs={
-            'class': 'form-control',
+            'class': 'form-control'
         })
     )
     language = forms.ModelChoiceField(
-        label='Язык',
         queryset=Language.objects.all(),
         to_field_name='slug',
         required=True,
         widget=forms.Select(attrs={
-            'class': 'form-control',
+            'class': 'form-control'
         })
     )
     send_email = forms.BooleanField(
@@ -107,7 +121,7 @@ class UserUpdateForm(forms.Form):
 
     class Meta:
         model = User
-        fields = ('city', 'language', 'send_email')
+        fields = ('first_name', 'last_name', 'username', 'city', 'language', 'send_email')
 
 
 class UserContactForm(forms.Form):

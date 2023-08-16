@@ -4,12 +4,16 @@ from django.views.generic import ListView
 from scraping.forms import VacancyFindForm
 from scraping.models import Vacancy
 from scraping.services import get_filter
+from users.forms import UserContactForm
 
 
 def home_view(request):
-    """Отображение домашней страницы с формой поиска"""
-    form = VacancyFindForm()
-    return render(request, 'home.html', {'form': form})
+    """Отображение домашней страницы"""
+    forms = {
+        'search_form': VacancyFindForm(),
+        'contact_form': UserContactForm(),
+    }
+    return render(request, 'home.html', forms)
 
 
 class VacancyListView(ListView):

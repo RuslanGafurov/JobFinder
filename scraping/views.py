@@ -30,4 +30,4 @@ class VacancyListView(ListView):
             self.request.GET.get('city'),
             self.request.GET.get('language')
         )
-        return Vacancy.objects.filter(**_filter).select_related('name', 'language')
+        return Vacancy.objects.filter(**_filter).select_related('city', 'language')

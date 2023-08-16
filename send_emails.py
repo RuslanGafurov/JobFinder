@@ -1,16 +1,16 @@
-# _______________ Запуск Django ________________
-from scraping.services import launch_django  # |
-                                             # |
-launch_django()                              # |
-# _____________________________________________|
+# _____________ Запуск Django ______________
+from scraping.services import launch_django
+
+launch_django()
+# __________________________________________
 
 import datetime as dt
 
 from django.core.mail import EmailMultiAlternatives
 
-from users.models import User
 from job_finder.settings import env
 from scraping.models import City, Error, Language, Url, Vacancy
+from users.models import User
 
 
 def send_messages(_subject: str, _text_content: str, html_content: str, to: str) -> None:

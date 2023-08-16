@@ -6,6 +6,7 @@ from scraping.services import from_cyrillic_to_latin
 def default_urls():
     return {
         'headhunter': '',
+        'super_job': '',
     }
 
 

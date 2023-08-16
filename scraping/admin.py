@@ -21,8 +21,7 @@ class UrlAdmin(admin.ModelAdmin):
     """Расширенное отображения модели адресов"""
 
     list_display = ('city', 'language')
-    fields = ('urls',)
-    readonly_fields = ('city', 'language')
+    fields = ('urls', 'city', 'language')
 
 
 @admin.register(Error)

@@ -7,6 +7,7 @@ def default_urls():
     return {
         'headhunter': '',
         'super_job': '',
+        'rabota_ru': '',
     }
 
 

@@ -3,9 +3,54 @@
 
 {% block content %}
 
+    <h1 class="text-center">Вакансии</h1><br>
+
+    <!-- Pagination-->
+    <div class="pagination justify-content-center">
+        <ul class="pagination">
+
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        Previous
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in page_obj.paginator.page_range %}
+                <li class="page-item">
+                    <a class="page-link {% if page == page_obj.number %} active {% endif %}" href="?page={{ page }}">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        Next
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+
+        </ul>
+    </div>
+
     <!-- Display of vacancies -->
     <div class="">
-        <h1 class="text-center">Вакансии</h1>
+
         {% for obj in object_list %}
             <div class="card my-3">
                 <h5 class="card-header">{{ obj.title }}</h5>
@@ -27,7 +72,7 @@
     </div>
 
     <!-- Pagination-->
-    <div class="pagination">
+    <div class="pagination justify-content-center">
         <ul class="pagination">
 
             {% if page_obj.has_previous %}

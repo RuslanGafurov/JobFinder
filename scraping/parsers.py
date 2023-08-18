@@ -74,13 +74,61 @@ def super_job(url: str, city: Optional[int] = None, language: Optional[int] = No
                         title = div.find('span', attrs={'class': '_2t8AD _3E7PM HnAWf _2Hanf YvK0u _1tEEc _4mQds _8YNSw'})
                         href = title.a['href']
                         company = div.find('div', attrs={'class': '_2kYdL _3F5ld _2Y3Fn _1DzI0'})
-                        company = company.text if company else ''
+                        company = company.a.text if company else ''
                         description = div.find('span', attrs={'class': '_396aa _1tEEc _4mQds _10ByY _3rqio'})
                         jobs.append({
                             'site': site,
                             'url': f'{domain}{href}',
                             'title': title.a.text,
                             'company': company,
+                            'description': description.text,
+                            'city_id': city,
+                            'language_id': language,
+                        })
+                else:
+                    error = 'Div list does not exist'
+            else:
+                error = 'Main div does not exist'
+        else:
+            error = 'Page not responding'
+    else:
+        error = 'URL is empty'
+
+    # Если есть ошибки при сборе вакансий
+    if error:
+        errors = {
+            'site': site,
+            'url': url,
+            'city_id': city,
+            'language_id': language,
+            'error': error,
+        }
+
+    return jobs, errors
+
+
+def rabota_ru(url: str, city: Optional[int] = None, language: Optional[int] = None) -> return_annotation:
+    """Сбор вакансий с сайта Rabota.ru"""
+    jobs, error, errors = [], '', {}
+    site, domain = 'Rabota.ru', 'https://www.rabota.ru/'
+    if url:
+        response = requests.get(url, headers=headers[randint(0, 2)])
+        if response.status_code == HTTPStatus.OK:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            main_div = soup.find('div', attrs={'class': 'infinity-scroll r-serp__infinity-list'})
+            if main_div:
+                div_list = main_div.find_all('div', attrs={'class': 'vacancy-preview-card__wrapper white-box vacancy-preview-card__wrapper_pointer'})
+                if div_list:
+                    for div in div_list:
+                        title = div.find('h3')
+                        href = title.a['href']
+                        company = div.find('span', attrs={'class': 'vacancy-preview-card__company-name'})
+                        description = div.find('div', attrs={'class': 'vacancy-preview-card__short-description'})
+                        jobs.append({
+                            'site': site,
+                            'url': f'{domain}{href}',
+                            'title': title.a.text.strip(),
+                            'company': company.a.text.strip(),
                             'description': description.text,
                             'city_id': city,
                             'language_id': language,

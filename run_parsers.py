@@ -8,17 +8,16 @@ import asyncio
 import datetime as dt
 from typing import Any
 
-from django.contrib.auth import get_user_model
 from django.db import DatabaseError
 
 from scraping.models import City, Error, Language, Url, Vacancy
-from scraping.parsers import headhunter, super_job
+from scraping.parsers import headhunter, super_job, rabota_ru
 
-User = get_user_model()
 
 parsers = (
     (headhunter, 'headhunter'),
     (super_job, 'super_job'),
+    (rabota_ru, 'rabota_ru'),
 )
 jobs, errors = [], []
 today = dt.date.today()

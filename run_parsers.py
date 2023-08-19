@@ -10,14 +10,14 @@ from typing import Any
 
 from django.db import DatabaseError
 
-from scraping.models import City, Error, Language, Url, Vacancy
-from scraping.parsers import headhunter, super_job, rabota_ru
-
+from scraping.models import Error, Url, Vacancy
+from scraping.parsers import *
 
 parsers = (
     (headhunter, 'headhunter'),
     (super_job, 'super_job'),
     (rabota_ru, 'rabota_ru'),
+    (zarplata_ru, 'zarplata_ru'),
 )
 jobs, errors = [], []
 today = dt.date.today()
@@ -40,15 +40,10 @@ def get_urls() -> list[dict[str, Any]]:
 def save_errors() -> None:
     """Сохранение ошибок в Базу Данных без дубликатов"""
 
-    cities = City.objects.all().values('name')
-    languages = Language.objects.all().values('name')
-
     for error_dct in errors:
         # Добавление новой ошибки или обновление существующей
         Error.objects.update_or_create(
             site=error_dct['site'],
-            city=cities.get(pk=error_dct['city_id'])['name'],
-            language=languages.get(pk=error_dct['language_id'])['name'],
             error=error_dct['error'],
             url=error_dct['url'],
             defaults={'error': error_dct['error']}  # Обновляемое значение

@@ -8,6 +8,7 @@ def default_urls():
         'headhunter': '',
         'super_job': '',
         'rabota_ru': '',
+        'zarplata_ru': '',
     }
 
 
@@ -112,14 +113,6 @@ class Error(models.Model):
         verbose_name='сайт',
         max_length=50,
     )
-    city = models.CharField(
-        verbose_name='город',
-        max_length=50,
-    )
-    language = models.CharField(
-        verbose_name='язык',
-        max_length=50,
-    )
     error = models.CharField(
         verbose_name='ошибка',
         max_length=250,
@@ -128,7 +121,7 @@ class Error(models.Model):
         auto_now_add=True,
         verbose_name='дата',
     )
-    url = models.URLField()
+    domain = models.URLField()
 
     class Meta:
         verbose_name = 'ошибка'

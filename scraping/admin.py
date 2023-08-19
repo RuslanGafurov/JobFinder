@@ -29,8 +29,8 @@ class ErrorAdmin(admin.ModelAdmin):
     """Расширенное отображения модели ошибок"""
 
     list_display = ('site', 'error', 'timestamp')
-    fields = ('error', 'city', 'language', 'url')
-    readonly_fields = ('site', 'error', 'city', 'language', 'url')
+    fields = ('error', 'domain')
+    readonly_fields = ('site', 'error', 'domain')
     ordering = ('timestamp',)
 
 

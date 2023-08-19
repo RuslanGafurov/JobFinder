@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from random import randint
+from re import search
 from typing import Any, Optional
 
 import requests
@@ -13,6 +14,7 @@ __all__ = (
     'super_job',
     'rabota_ru',
     'zarplata_ru',
+    'careerist_ru',
 )
 return_annotation = tuple[list[dict[str, Any]], dict[str, str]]
 
@@ -208,6 +210,55 @@ def zarplata_ru(url: str, city: Optional[int] = None, language: Optional[int] = 
         errors = {
             'site': site,
             'url': domain,
+            'error': error,
+        }
+
+    return jobs, errors
+
+
+def careerist_ru(url: str, city: Optional[int] = None, language: Optional[int] = None) -> return_annotation:
+    """Сбор вакансий с сайта Careerist.ru"""
+    jobs, error, errors = [], '', {}
+    site, domain = 'Careerist.ru', 'https://www.careerist.ru/'
+    if url:
+        response = requests.get(url, headers=headers[randint(0, 2)])
+        if response.status_code == HTTPStatus.OK:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            main_div = soup.find('div', attrs={'class': 'vacSearchList'})
+            if main_div:
+                div_list = main_div.find_all('div', attrs={'class': 'list-block'})
+                if div_list:
+                    for div in div_list:
+                        title = div.find('p', attrs={'class': 'h5 card-text'})
+                        href = title.a['href']
+                        comp_and_desc = div.select('p', attrs={'class': 'card-text'})[3].text.strip()
+                        company = search('"(.+?)"', comp_and_desc)
+                        description = comp_and_desc[company.end()+1:]
+                        jobs.append({
+                            'site': site,
+                            'url': href,
+                            'title': title.a.text,
+                            'company': company.group()[1:-1],
+                            'description': description.strip(),
+                            'city_id': city,
+                            'language_id': language,
+                        })
+                else:
+                    error = 'Div list does not exist'
+            else:
+                error = 'Main div does not exist'
+        else:
+            error = 'Page not responding'
+    else:
+        error = 'URL is empty'
+
+    # Если есть ошибки при сборе вакансий
+    if error:
+        errors = {
+            'site': site,
+            'url': domain,
+            'city_id': city,
+            'language_id': language,
             'error': error,
         }
 

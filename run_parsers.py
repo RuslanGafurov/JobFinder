@@ -18,6 +18,7 @@ parsers = (
     (super_job, 'super_job'),
     (rabota_ru, 'rabota_ru'),
     (zarplata_ru, 'zarplata_ru'),
+    (careerist_ru, 'careerist_ru'),
 )
 jobs, errors = [], []
 today = dt.date.today()

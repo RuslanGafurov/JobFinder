@@ -11,7 +11,8 @@
 
             {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}&city={{ city }}&language={{ language }}">
                         Previous
                     </a>
                 </li>
@@ -25,7 +26,8 @@
 
             {% for page in page_obj.paginator.page_range %}
                 <li class="page-item">
-                    <a class="page-link {% if page == page_obj.number %} active {% endif %}" href="?page={{ page }}">
+                    <a class="page-link {% if page == page_obj.number %} active {% endif %}"
+                       href="?page={{ page }}&city={{ city }}&language={{ language }}">
                         {{ page }}
                     </a>
                 </li>
@@ -33,7 +35,8 @@
 
             {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}&city={{ city }}&language={{ language }}">
                         Next
                     </a>
                 </li>

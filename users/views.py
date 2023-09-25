@@ -70,5 +70,5 @@ def contact_view(request):
             )
             user_suggestion.save()
             messages.success(request, 'Данные отправлены')
-        return redirect('users:profile')
+        return redirect('home')
     return redirect('users:login')
